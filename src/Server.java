@@ -1,52 +1,134 @@
+
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Server
 {
-	public static void main (String[] args)
+
+	ServerSocket server;
+	ArrayList<PrintWriter> list_clientWriter;
+
+	final int LEVEL_ERROR = 1;
+	final int LEVEL_NORMAL = 0;
+
+	public static void main(String[] args)
+	{
+		Server s = new Server();
+		if (s.runServer())
+		{
+			s.listenToClients();
+		}
+		else
+		{
+			// Do nothing
+		}
+	}
+
+	public class ClientHandler implements Runnable
+	{
+
+		Socket client;
+		BufferedReader reader;
+
+		public ClientHandler(Socket client)
+		{
+			try
+			{
+				this.client = client;
+				reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+		@Override
+		public void run()
+		{
+			String nachricht;
+
+			try
+			{
+				while ((nachricht = reader.readLine()) != null)
+				{
+					appendTextToConsole("Vom Client: \n" + nachricht, LEVEL_NORMAL);
+					sendToAllClients(nachricht);
+				}
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void listenToClients()
+	{
+		while (true)
+		{
+			try
+			{
+				Socket client = server.accept();
+
+				PrintWriter writer = new PrintWriter(client.getOutputStream());
+				list_clientWriter.add(writer);
+
+				Thread clientThread = new Thread(new ClientHandler(client));
+				clientThread.start();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public boolean runServer()
 	{
 		try
 		{
-			ServerSocket server = new ServerSocket(5555);
-			System.out.println("Server gestartet!");
-			
-			Socket client = server.accept();
-			
-			//Streams
-			OutputStream out = client.getOutputStream();
-			PrintWriter writer = new PrintWriter(out);
-			
-			InputStream in = client.getInputStream();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-			//------------------------------
-			
-			
-			String s = null;
-			
-			while((s = reader.readLine()) != null) 
-					{
-						writer.write(s + "\n");
-						writer.flush();
-						System.out.println("Empfangen von client:" + s);
-					}
-			
-			
-			writer.close();
-			reader.close();
-			
-			
+			server = new ServerSocket(5555);
+			appendTextToConsole("Server wurde gestartet!", LEVEL_ERROR);
+
+			list_clientWriter = new ArrayList<PrintWriter>();
+			return true;
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
+			appendTextToConsole("Server konnte nicht gestartet werden!", LEVEL_ERROR);
 			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public void appendTextToConsole(String message, int level)
+	{
+		if (level == LEVEL_ERROR)
+		{
+			System.err.println(message + "\n");
+		}
+		else
+		{
+			System.out.println(message + "\n");
+		}
+	}
+
+	public void sendToAllClients(String message)
+	{
+		Iterator it = list_clientWriter.iterator();
+
+		while (it.hasNext())
+		{
+			PrintWriter writer = (PrintWriter) it.next();
+			writer.println(message);
+			writer.flush();
 		}
 	}
 }
