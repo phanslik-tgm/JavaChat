@@ -32,8 +32,11 @@ public class Server
 			
 			while((s = reader.readLine()) != null) 
 					{
+						writer.write(s + "\n");
+						writer.flush();
 						System.out.println("Empfangen von client:" + s);
 					}
+			
 			
 			writer.close();
 			reader.close();

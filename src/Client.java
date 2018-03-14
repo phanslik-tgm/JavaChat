@@ -6,11 +6,14 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Scanner;
 
 public class Client
 {
 	public static void main (String[] args)
 	{
+		
+		Scanner eingabe = new Scanner(System.in);
 		try
 		{
 			Socket client = new Socket("localhost",5555);
@@ -25,8 +28,20 @@ public class Client
 			//------------------------------
 			
 			
-			writer.write("Hallo Server!");
+			System.out.print("Eingabe: ");
+			String anServer = eingabe.nextLine();
+			
+			
+			writer.write(anServer + "\n");
 			writer.flush();
+			
+			
+			String s = null;
+			while((s = reader.readLine()) != null) 
+			{
+				System.out.println("Empfangen von Server:" + s);
+			}
+			
 			
 			writer.close();
 			reader.close();
