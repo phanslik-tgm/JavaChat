@@ -1,7 +1,5 @@
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -12,10 +10,10 @@ public class Server
 {
 
 	ServerSocket server;
-	ArrayList<PrintWriter> list_clientWriter;
+	static ArrayList<PrintWriter> list_clientWriter;
 
-	final int LEVEL_ERROR = 1;
-	final int LEVEL_NORMAL = 0;
+	final static int LEVEL_ERROR = 1;
+	final static int LEVEL_NORMAL = 0;
 
 	public static void main(String[] args)
 	{
@@ -30,44 +28,44 @@ public class Server
 		}
 	}
 
-	public class ClientHandler implements Runnable
-	{
-
-		Socket client;
-		BufferedReader reader;
-
-		public ClientHandler(Socket client)
-		{
-			try
-			{
-				this.client = client;
-				reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
-
-		@Override
-		public void run()
-		{
-			String nachricht;
-
-			try
-			{
-				while ((nachricht = reader.readLine()) != null)
-				{
-					appendTextToConsole("Vom Client: \n" + nachricht, LEVEL_NORMAL);
-					sendToAllClients(nachricht);
-				}
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
-	}
+//	public class ClientHandler implements Runnable
+//	{
+//
+//		Socket client;
+//		BufferedReader reader;
+//
+//		public ClientHandler(Socket client)
+//		{
+//			try
+//			{
+//				this.client = client;
+//				reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
+//			}
+//			catch (IOException e)
+//			{
+//				e.printStackTrace();
+//			}
+//		}
+//
+//		@Override
+//		public void run()
+//		{
+//			String nachricht;
+//
+//			try
+//			{
+//				while ((nachricht = reader.readLine()) != null)
+//				{
+//					appendTextToConsole("Vom Client: \n" + nachricht, LEVEL_NORMAL);
+//					sendToAllClients(nachricht);
+//				}
+//			}
+//			catch (IOException e)
+//			{
+//				e.printStackTrace();
+//			}
+//		}
+//	}
 
 	public void listenToClients()
 	{
@@ -77,10 +75,10 @@ public class Server
 			{
 				Socket client = server.accept();
 
-				PrintWriter writer = new PrintWriter(client.getOutputStream());
-				list_clientWriter.add(writer);
+				//PrintWriter writer = new PrintWriter(client.getOutputStream());
+				//list_clientWriter.add(writer);
 
-				Thread clientThread = new Thread(new ClientHandler(client));
+				Thread clientThread = new Thread(new Handler(client));
 				clientThread.start();
 			}
 			catch (IOException e)
@@ -94,7 +92,7 @@ public class Server
 	{
 		try
 		{
-			server = new ServerSocket(5555);
+			server = new ServerSocket(5050);
 			appendTextToConsole("Server wurde gestartet!", LEVEL_ERROR);
 
 			list_clientWriter = new ArrayList<PrintWriter>();
@@ -108,7 +106,7 @@ public class Server
 		}
 	}
 
-	public void appendTextToConsole(String message, int level)
+	public static void appendTextToConsole(String message, int level)
 	{
 		if (level == LEVEL_ERROR)
 		{
@@ -120,7 +118,7 @@ public class Server
 		}
 	}
 
-	public void sendToAllClients(String message)
+	public static void sendToAllClients(String message)
 	{
 		Iterator it = list_clientWriter.iterator();
 

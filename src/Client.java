@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -45,7 +47,10 @@ public class Client
 	{
 		clientFrame = new JFrame("TutCubeDE-Chat");
 		clientFrame.setSize(800, 600);
-
+		
+		//clientFrame.dispatchEvent(new WindowEvent(clientFrame, WindowEvent.WINDOW_CLOSING));
+		//clientFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		
 		// Panel erzeugen, welches alle anderen Inhalte enthält
 		clientPanel = new JPanel();
 
@@ -66,7 +71,10 @@ public class Client
 		scrollPane_Messages.setMinimumSize(new Dimension(700, 500));
 		scrollPane_Messages.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane_Messages.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-
+		
+		
+	
+		
 		if (!connectToServer())
 		{
 			// Connect-Label anzeigen ob verbunden oder nicht...
@@ -91,11 +99,20 @@ public class Client
 	{
 		try
 		{
-			client = new Socket("127.0.0.1", 5555);
+			client = new Socket("127.0.0.1", 5050);
 			reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			writer = new PrintWriter(client.getOutputStream());
 			appendTextMessages("Netzwerkverbindung hergestellt");
-
+			
+			clientFrame.addWindowListener(new WindowAdapter()
+            {
+                public void windowClosing(WindowEvent e)
+                {
+                    writer.println("exit");
+                    writer.flush();
+                }
+            });
+			
 			return true;
 		}
 		catch (Exception e)
@@ -122,6 +139,19 @@ public class Client
 	}
 
 	// Listener
+	
+//	public class closeListener implements ActionListener
+//	{
+//	  public void actionPerformed(ActionEvent event)
+//	  {
+//	     if(event.getSource() == /* a certain JButton */ )
+//	     {
+//	          // getString();
+//	          frame.dispose();
+//	     }
+//	}
+	  
+	  
 	public class SendPressEnterListener implements KeyListener
 	{
 
@@ -154,6 +184,7 @@ public class Client
 		{
 			sendMessageToServer();
 		}
+		
 
 	}
 
