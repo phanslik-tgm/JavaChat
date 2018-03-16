@@ -30,18 +30,14 @@ public class Handler implements Runnable
 
 			try
 			{
-				PrintWriter writer = new PrintWriter(this.client.getOutputStream());
-				Server.list_clientWriter.add(writer);
+				
 				while ((nachricht = reader.readLine()) != null)
 				{
 					Server.appendTextToConsole("Vom Client: \n" + nachricht, Server.LEVEL_NORMAL);
-					
-					
+					PrintWriter writer = new PrintWriter(client.getOutputStream());
+					Server.list_clientWriter.add(writer);
 					if(nachricht.equals("exit"))
 					{
-           	 			//sendToAllClients("\n"+Server.list_clientWriter.get(writer)+" disconnected.\n");
-           	 			//writer.println("exit");
-           	 			//writer.flush();
            	 			client.close();
            	 			Server.list_clientWriter.remove(writer);
            	 			break;

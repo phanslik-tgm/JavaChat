@@ -45,11 +45,8 @@ public class Client
 
 	public void createGUI()
 	{
-		clientFrame = new JFrame("TutCubeDE-Chat");
+		clientFrame = new JFrame("JavaChat");
 		clientFrame.setSize(800, 600);
-		
-		//clientFrame.dispatchEvent(new WindowEvent(clientFrame, WindowEvent.WINDOW_CLOSING));
-		//clientFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		
 		// Panel erzeugen, welches alle anderen Inhalte enthält
 		clientPanel = new JPanel();
@@ -88,7 +85,7 @@ public class Client
 		clientPanel.add(textField_ClientMessage);
 		clientPanel.add(button_SendMessage);
 
-		// Panel zum ContentPane (Inhaltsbereich) hinzufügen
+		// Panel zum ContentPanel (Inhaltsbereich) hinzufügen
 		clientFrame.getContentPane().add(BorderLayout.CENTER, clientPanel);
 
 		clientFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -140,16 +137,7 @@ public class Client
 
 	// Listener
 	
-//	public class closeListener implements ActionListener
-//	{
-//	  public void actionPerformed(ActionEvent event)
-//	  {
-//	     if(event.getSource() == /* a certain JButton */ )
-//	     {
-//	          // getString();
-//	          frame.dispose();
-//	     }
-//	}
+
 	  
 	  
 	public class SendPressEnterListener implements KeyListener

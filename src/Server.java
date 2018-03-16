@@ -28,45 +28,6 @@ public class Server
 		}
 	}
 
-//	public class ClientHandler implements Runnable
-//	{
-//
-//		Socket client;
-//		BufferedReader reader;
-//
-//		public ClientHandler(Socket client)
-//		{
-//			try
-//			{
-//				this.client = client;
-//				reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-//			}
-//			catch (IOException e)
-//			{
-//				e.printStackTrace();
-//			}
-//		}
-//
-//		@Override
-//		public void run()
-//		{
-//			String nachricht;
-//
-//			try
-//			{
-//				while ((nachricht = reader.readLine()) != null)
-//				{
-//					appendTextToConsole("Vom Client: \n" + nachricht, LEVEL_NORMAL);
-//					sendToAllClients(nachricht);
-//				}
-//			}
-//			catch (IOException e)
-//			{
-//				e.printStackTrace();
-//			}
-//		}
-//	}
-
 	public void listenToClients()
 	{
 		while (true)
@@ -74,10 +35,7 @@ public class Server
 			try
 			{
 				Socket client = server.accept();
-
-				//PrintWriter writer = new PrintWriter(client.getOutputStream());
-				//list_clientWriter.add(writer);
-
+				
 				Thread clientThread = new Thread(new Handler(client));
 				clientThread.start();
 			}
@@ -121,7 +79,7 @@ public class Server
 	public static void sendToAllClients(String message)
 	{
 		Iterator it = list_clientWriter.iterator();
-
+		
 		while (it.hasNext())
 		{
 			PrintWriter writer = (PrintWriter) it.next();
